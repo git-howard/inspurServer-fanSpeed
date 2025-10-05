@@ -1,0 +1,18 @@
+[
+    {
+        "description": "浪潮服务器1",
+        "bmc_host": "192.168.100.220",
+        "username": "admin",
+        "password": "P@ssw0rd",
+        "fans_count": 8,
+        "fan_speed": 30
+    }
+        {
+        "description": "浪潮服务器2",
+        "bmc_host": "192.168.100.221",
+        "username": "admin",
+        "password": "P@ssw0rd",
+        "fans_count": 8,
+        "fan_speed": 30
+    }
+]
