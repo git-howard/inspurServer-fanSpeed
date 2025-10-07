@@ -174,7 +174,7 @@ def is_weekend():
     return today >= 5
 
 def is_chinese_holiday():
-    """判断当前是否为中国国定节假日"""
+    """判断当前是否为中国国定节假日或周末（根据API信息）"""
     today = date.today()
     
     try:
@@ -188,16 +188,16 @@ def is_chinese_holiday():
         # 解析响应数据
         data = response.json()
         
-        # 检查是否为节假日
+        # 检查是否为节假日或周末
         # API返回的type: 0=工作日, 1=周末, 2=节假日
-        if data.get('status') == 1 and data.get('type') == 2:
-            logging.info(f"通过API确认 {today} 是中国节假日")
+        if data.get('status') == 1 and (data.get('type') == 2 or data.get('type') == 1):
+            if data.get('type') == 2:
+                logging.info(f"通过API确认 {today} 是中国节假日")
+            else:
+                logging.info(f"通过API确认 {today} 是周末")
             return True
-        elif data.get('status') == 1 and data.get('type') == 1:
-            # 周末已经在is_weekend()函数中处理
-            logging.info(f"通过API确认 {today} 是周末")
         else:
-            logging.info(f"通过API确认 {today} 不是中国节假日")
+            logging.info(f"通过API确认 {today} 不是中国节假日或周末")
             return False
     except Exception as e:
         logging.warning(f"获取节假日API数据失败: {str(e)}，使用本地节假日列表")
@@ -245,6 +245,8 @@ def main():
         # 如果未指定转速，根据日期自动选择执行模式
         if target is None:
             # 判断当前是否为周末或中国节假日
+            # 注意：is_chinese_holiday()函数在API返回type=1（周末）时也会返回False，
+            # 但API已经确认是周末，所以我们需要额外检查API返回的周末信息
             if is_weekend() or is_holiday:
                 target = 'auto'
                 logging.info(f"当前是周末或中国节假日，自动执行auto模式")
